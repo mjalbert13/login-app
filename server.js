@@ -33,6 +33,9 @@ app.use(session({
     resave: true
 }));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(expressValidator({
     errorFormater: function(param, msg, value) {
         var namespace = param.split(".")
@@ -49,3 +52,21 @@ app.use(expressValidator({
         };
     }
 }));
+
+app.use(flash());
+
+app.use(function(req, res, next){
+    res.locals.success_msg= req.flash("success_msg");
+    res.locals.error_msg = req.flash("error_msg");
+    res.locals.error = req.flash("error");
+    next();
+})
+
+app.use("/", routes);
+app.use("/users", users);
+
+app.set("port", (process.env.PORT || 3000));
+
+app.listen(app.get("port"),function(){
+    console.log("App is listening on Port "+app.get("port"))
+})
